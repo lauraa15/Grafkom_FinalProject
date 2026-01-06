@@ -4,8 +4,41 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>2372020-2372060-2372061_TUBES-GRAFKOM</title>
+    <style>
+        #puzzleUI {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .box {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+    </style>
 </head>
 <body>
+    <div id="puzzleUI" class="hidden">
+        <div class="box">
+            <h2>Riddle</h2>
+            <p>What is full of holes but still holds water?</p>
+            <button onclick="answerPuzzle(true)">A sponge</button>
+            <button onclick="answerPuzzle(false)">A colander</button>
+            <br><br>
+            <button onclick="closePuzzle()">Exit</button>
+        </div>
+    </div>
     <script type="module" src="/src/main.js"></script>
 </body>
 </html>
