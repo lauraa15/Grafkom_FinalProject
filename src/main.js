@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import Walls from "./walls.js";
+import { generateMazeLayout } from "./mazeGenerator.js";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
 // scene
@@ -24,31 +25,17 @@ scene.add(plane);
 
 // walls
 const walls = new Walls();
-const mazeLayout = [
-    [1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 
-    [1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1],
-    
-    [1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 0, 1],
-    
-    [1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 1],
-    
-    [1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0, 1],
-    
-    [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    
-    [1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1],
-    
-    [1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1],
-    
-    [1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1],
-    
-    [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
-    
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-];
+// lebar
+const rows = 21;
+// panjang
+const cols = 21;
+
+const mazeLayout = generateMazeLayout(rows, cols);
+
 walls.generateMaze(mazeLayout, 3, 0x0000ff);
 walls.addToScene(scene);
+
 
 // controls
 const controls = new OrbitControls(cam, renderer.domElement);
