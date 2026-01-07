@@ -126,13 +126,13 @@ scene.add(door);
 function openPuzzle() {
     if (puzzleOpen) return;
     puzzleOpen = true;
-    document.getElementById("puzzleUI").classList.remove("hidden");
+    document.getElementById("puzzleUI").style.display = "flex";
     controls.unlock();
 }
 
 function closePuzzle() {
     puzzleOpen = false;
-    document.getElementById("puzzleUI").classList.add("hidden");
+    document.getElementById("puzzleUI").style.display = "none";
     controls.lock();
 }
 
@@ -151,7 +151,7 @@ window.answerPuzzle = function(isCorrect) {
 }
 
 function draw() {
-    const speed = 0.05;
+    const speed = 0.2;
 
     if (!puzzleOpen){
         if (move.forward) controls.moveForward(speed);
