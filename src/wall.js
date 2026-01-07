@@ -19,6 +19,11 @@ export default class Wall {
 
     setPosition(x, y, z) {
         this.mesh.position.set(x, y, z);
+        this.updateHitbox(); 
+    }
+
+    updateHitbox() {
+        this.hitbox.setFromObject(this.mesh);
     }
 
     addToScene(scene) {
