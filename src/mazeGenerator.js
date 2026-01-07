@@ -1,4 +1,18 @@
 // menggunakan algoritma DFS untuk generate layout dari maze
+
+// fungsi untuk randomize arah pergerakan dfs
+function shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+}
+
+function distance(a, b) {
+    return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
+}
+
 export function generateMazeLayout(rows, cols) {
     // 0 = path, 1 = wall
     // rows & cols HARUS ganjil
@@ -15,14 +29,6 @@ export function generateMazeLayout(rows, cols) {
         }
     }
 
-    // fungsi untuk randomize arah pergerakan dfs
-    function shuffle(arr) {
-        for (let i = arr.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [arr[i], arr[j]] = [arr[j], arr[i]];
-        }
-        return arr;
-    }
 
     // buat jalan
     function path(x1, y1) {
@@ -67,3 +73,42 @@ export function generateMazeLayout(rows, cols) {
 
     return maze;
 }
+
+export function generateQuizLayout(maze, quizCount, minDistance = 3) {
+    const rows = maze.length;
+    const cols = maze[0].length;
+
+    const paths = [];
+    const quizzes = [];
+
+    for (let i = 1; i < rows - 1; i++) {
+        for (let j = 1; j < cols - 1; j++) {
+            if (maze[i][j] === 0) {
+                paths.push({ x: i, y: j });
+            }
+        }
+    }
+
+    shuffle(paths);
+
+    for (const cell of paths) {
+        if (quizzes.length >= quizCount) break;
+
+        let valid = true;
+
+        for (const q of quizzes) {
+            if (distance(cell, q) < minDistance) {
+                valid = false;
+                break;
+            }
+        }
+
+        if (valid) {
+            maze[cell.x][cell.y] = 2;
+            quizzes.push(cell);
+        }
+    }
+
+    return maze;
+}
+

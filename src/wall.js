@@ -9,14 +9,6 @@ export default class Wall {
         this.hitbox = new THREE.Box3().setFromObject(this.mesh);
     }
 
-    // constructor menggunakan texture
-    // constructor(width, height, depth, texture) {
-    //     const geometry = new THREE.BoxGeometry(width, height, depth);
-    //     const material = new THREE.MeshLambertMaterial({ normalMap: texture, map: texture });
-    //     this.mesh = new THREE.Mesh(geometry, material);
-    //     this.hitbox = new THREE.Box3().setFromObject(this.mesh);
-    // }
-
     setPosition(x, y, z) {
         this.mesh.position.set(x, y, z);
     }
