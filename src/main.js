@@ -16,11 +16,27 @@ document.body.appendChild(renderer.domElement);
 cam.position.y = 2;
 cam.position.z = 50;
 
+// loaders
+const textureLoader = new THREE.TextureLoader();
+const groundTexture = textureLoader.load('public/Ground099.png');
+
+// lighting
+const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+directionalLight.position.set(0, 50, 0);
+scene.add(directionalLight);
+
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.09);
+scene.add(ambientLight);
+
+// light helper
+const directionalLightHelper = new THREE.DirectionalLightHelper(directionalLight, 5);
+scene.add(directionalLightHelper);
+
 // plane
 const planeGeometry = new THREE.PlaneGeometry(25, 25);
-const material3 = new THREE.MeshBasicMaterial({ color: 0xffffff });
+const material3 = new THREE.MeshLambertMaterial({normalMap: groundTexture, map: groundTexture, side: THREE.DoubleSide });
 const plane = new THREE.Mesh(planeGeometry, material3);
-plane.rotation.x = - Math.PI / 2;
+plane.rotation.x =  Math.PI / 2;
 scene.add(plane);
 
 // walls
@@ -35,7 +51,6 @@ const mazeLayout = generateMazeLayout(rows, cols);
 
 walls.generateMaze(mazeLayout, 3, 0x0000ff);
 walls.addToScene(scene);
-
 
 // controls
 const controls = new OrbitControls(cam, renderer.domElement);

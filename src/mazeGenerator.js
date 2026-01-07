@@ -25,9 +25,9 @@ export function generateMazeLayout(rows, cols) {
     }
 
     // buat jalan
-    function path(x, y) {
+    function path(x1, y1) {
         // buat start jadi kosong/path
-        maze[x][y] = 0;
+        maze[x1][y1] = 0;
 
         // gerakan diacak supaya jalan lebih acak
         // pakai langkah 2 supaya ada tembok di antara jalannya
@@ -41,20 +41,22 @@ export function generateMazeLayout(rows, cols) {
         // coba setiap arah
         for (const direction of directions) {
             // ambil koordinat 2 langkah di arah tersebut
-            const nx = x + direction.dx;
-            const ny = y + direction.dy;
+            var x3 = x1 + direction.dx;
+            var y3 = y1 + direction.dy;
 
 
-            if ((nx > 0) &&  // tidak keluar dari batas atas
-                (ny > 0) && // tidak keluar dari batas kiri
-                nx < rows - 1 && // tidak keluar dari batas bawah
-                ny < cols - 1 && // tidak keluar dari batas kanan
-                maze[nx][ny] === 1 // koordinat masih tembok
+            if ((x3 > 0) &&  // tidak keluar dari batas atas
+                (y3 > 0) && // tidak keluar dari batas kiri
+                x3 < rows - 1 && // tidak keluar dari batas bawah
+                y3 < cols - 1 && // tidak keluar dari batas kanan
+                maze[x3][y3] === 1 // koordinat masih tembok
             ) {
-                // buka tembok di antara x,y dan nx,ny
-                maze[x + direction.dx / 2][y + direction.dy / 2] = 0;
+                // buka tembok di antara x1,y1 dan x3,y3
+                var x2 = x1 + direction.dx / 2;
+                var y2 = y1 + direction.dy / 2;
+                maze[x2][y2] = 0;
                 // lanjut ke koordinat baru
-                path(nx, ny);
+                path(x3, y3);
             }
         }
     }
