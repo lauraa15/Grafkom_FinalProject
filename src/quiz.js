@@ -1,7 +1,7 @@
 import * as THREE from "three";
-
+import Ground from "./ground";
 export default class Quiz {
-    constructor(size, color) {
+    constructor(size, color, groundWidth, groundHeight, groundMaterial) {
         // bentuk gemstone
         // nanti diubah scroll
         const geometry = new THREE.OctahedronGeometry(size);

@@ -1,5 +1,6 @@
 import Wall from "./wall.js";
 import Quiz from "./quiz.js";
+import Ground from "./ground.js";
 
 // class untuk mengelola banyak wall
 export default class Maze {
@@ -9,7 +10,7 @@ export default class Maze {
     }
 
     // menambahkan wall ke array
-    addWall(wall) {
+    addElement(wall) {
         this.elements.push(wall);
     }
 
@@ -19,38 +20,45 @@ export default class Maze {
     }
 
     // generate maze dari layout 
-    generateMaze(layout, wallHeight, material) {
+    generateMaze(layout, wallHeight, wallMaterial, groundMaterial) {
         // ukuran wall
         const wallWidth = 2.5;
         const wallDepth = 2.5;
 
         // menengahkan maze ke tengah scene
         const offsetX = (layout[0].length * wallWidth) / 2;
-        const offsetZ = (layout.length * wallDepth) / 2;    
+        const offsetZ = (layout.length * wallDepth) / 2;
 
         // buat wall sesuai layout
         for (let i = 0; i < layout.length; i++) {
             for (let j = 0; j < layout[i].length; j++) {
-
+                // set posisi sesuai grid
+                const posX = j * wallWidth - offsetX + wallWidth / 2;
+                const posZ = i * wallDepth - offsetZ + wallDepth / 2;
                 // cek di posisi i,j (1 = wall, 0 = path, 2 = quiz)
                 if (layout[i][j] === 1) {
                     // buat wall
-                    const wall = new Wall(wallWidth, wallHeight, wallDepth, material);
-                    
-                    // set posisi wall sesuai grid
-                    const posX = j * wallWidth - offsetX + wallWidth / 2;
-                    const posZ = i * wallDepth - offsetZ + wallDepth / 2;
-                    
+                    const wall = new Wall(wallWidth, wallHeight, wallDepth, wallMaterial);
+
                     wall.setPosition(posX, wallHeight / 2, posZ);
-                    this.addWall(wall);
+                    this.addElement(wall);
                 }
-                else if (layout[i][j] === 2) { 
+                else if (layout[i][j] === 2) {
                     // buat quiz 
                     const quiz = new Quiz(0.5, 0x00ff00);
-                    const posX = j * wallWidth - offsetX + wallWidth / 2;
-                    const posZ = i * wallDepth - offsetZ + wallDepth / 2;
+
                     quiz.setPosition(posX, 1, posZ);
-                    this.addWall(quiz);
+                    this.addElement(quiz);
+
+                    const ground = new Ground(wallWidth, wallHeight, groundMaterial);
+                    ground.setPosition(posX, 0, posZ);
+                    this.addElement(ground);
+                }
+                else if (layout[i][j] === 0) {
+                    const ground = new Ground(wallWidth, wallHeight, groundMaterial);
+
+                    ground.setPosition(posX, 0, posZ);
+                    this.addElement(ground);
                 }
             }
         }

@@ -1,7 +1,9 @@
 import * as THREE from "three";
 import Maze from "./maze.js";
+import Ground from "./ground.js";
 import { generateMazeLayout, generateQuizLayout } from "./mazeGenerator.js";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import { PointLight, PointLightHelper } from "three/webgpu";
 
 // scene
 const scene = new THREE.Scene();
@@ -21,35 +23,52 @@ const textureLoader = new THREE.TextureLoader();
 
 // load wall textures
 // pakai 1K texture supaya ga berat
-const colorMap = textureLoader.load("/textures/bush/Grass001_1K-JPG_Color.jpg");
-colorMap.colorSpace = THREE.SRGBColorSpace;
-const normalMap = textureLoader.load("/textures/bush/Grass001_1K-JPG_NormalGL.jpg");
-const roughnessMap = textureLoader.load("/textures/bush/Grass001_1K-JPG_Roughness.jpg");
-const aoMap = textureLoader.load("/textures/bush/Grass001_1K-JPG_AmbientOcclusion.jpg");
-const displacementMap = textureLoader.load("/textures/bush/Grass001_1K-JPG_Displacement.jpg");
+const bushColorMap = textureLoader.load("/textures/bush/Grass001_1K-JPG_Color.jpg");
+bushColorMap.colorSpace = THREE.SRGBColorSpace;
+const bushNormalMap = textureLoader.load("/textures/bush/Grass001_1K-JPG_NormalGL.jpg");
+const bushRoughnessMap = textureLoader.load("/textures/bush/Grass001_1K-JPG_Roughness.jpg");
+const bushAoMap = textureLoader.load("/textures/bush/Grass001_1K-JPG_AmbientOcclusion.jpg");
+const bushDisplacementMap = textureLoader.load("/textures/bush/Grass001_1K-JPG_Displacement.jpg");
+
+const groundColorMap = textureLoader.load("/textures/ground/PavingStones139_1K-JPG_Color.jpg");
+groundColorMap.colorSpace = THREE.SRGBColorSpace;
+const groundNormalMap = textureLoader.load("/textures/ground/PavingStones139_1K-JPG_NormalGL.jpg");
+const groundRoughnessMap = textureLoader.load("/textures/ground/PavingStones139_1K-JPG_Roughness.jpg");
+const groundAoMap = textureLoader.load("/textures/ground/PavingStones139_1K-JPG_AmbientOcclusion.jpg");
+const groundDisplacementMap = textureLoader.load("/textures/ground/PavingStones139_1K-JPG_Displacement.jpg");
 
 // buat material wall
 const bushMaterial = new THREE.MeshStandardMaterial({
-    map: colorMap,
-    normalMap: normalMap,
-    roughnessMap: roughnessMap,
-    aoMap: aoMap,
-    displacementMap: displacementMap,
+    map: bushColorMap,
+    normalMap: bushNormalMap,
+    roughnessMap: bushRoughnessMap,
+    aoMap: bushAoMap,
+    displacementMap: bushDisplacementMap,
     displacementScale: 0.01,
     roughness: 1,
-    color: 0x00ff00,
+    color: 0x2f4f2f
 });
 
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+const groundMaterial = new THREE.MeshStandardMaterial({
+    map: groundColorMap,
+    normalMap: groundNormalMap,
+    roughnessMap: groundRoughnessMap,
+    aoMap: groundAoMap,
+    displacementMap: groundDisplacementMap,
+    displacementScale: 0.01,
+    roughness: 1,
+    color: 0x333333
+})
+
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
 scene.add(ambientLight);
 
+const pointLight = new PointLight(0xffffff, 1000)
+pointLight.position.set(0, 20, 0)
+scene.add(pointLight)
 
-// plane
-// const planeGeometry = new THREE.PlaneGeometry(25, 25);
-// const material3 = new THREE.MeshLambertMaterial({normalMap: groundTexture, map: groundTexture, side: THREE.DoubleSide });
-// const plane = new THREE.Mesh(planeGeometry, material3);
-// plane.rotation.x =  Math.PI / 2;
-// scene.add(plane);
+const pointLightHelper = new PointLightHelper(pointLight, 5);
+scene.add(pointLightHelper)
 
 // Maze
 const maze = new Maze();
@@ -58,7 +77,7 @@ const cols = 20; // panjang maze
 
 const mazeLayout = generateMazeLayout(rows, cols);
 const quizLayout = generateQuizLayout(mazeLayout, 5, rows / 2);
-maze.generateMaze(quizLayout, 3, bushMaterial);
+maze.generateMaze(quizLayout, 3, bushMaterial, groundMaterial);
 maze.addToScene(scene);
 
 // controls
