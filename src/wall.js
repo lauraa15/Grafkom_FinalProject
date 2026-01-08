@@ -6,6 +6,8 @@ export default class Wall {
         const geometry = new THREE.BoxGeometry(width, height, depth);
         geometry.setAttribute('uv2', new THREE.BufferAttribute(geometry.attributes.uv.array, 2));
         this.mesh = new THREE.Mesh(geometry, material);
+        this.mesh.castShadow = true
+        this.mesh.receiveShadow = true
         this.hitbox = new THREE.Box3().setFromObject(this.mesh);
     }
 

@@ -13,6 +13,7 @@ const cam = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeig
 // render
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.shadowMap.enabled = true;
 document.body.appendChild(renderer.domElement);
 
 cam.position.y = 2;
@@ -65,6 +66,7 @@ scene.add(ambientLight);
 
 const pointLight = new PointLight(0xffffff, 1000)
 pointLight.position.set(0, 20, 0)
+pointLight.castShadow = true
 scene.add(pointLight)
 
 const pointLightHelper = new PointLightHelper(pointLight, 5);
