@@ -19,10 +19,10 @@ export default class Maze {
     }
 
     // generate maze dari layout 
-    generateMaze(layout, wallHeight, wallColor) {
+    generateMaze(layout, wallHeight, material) {
         // ukuran wall
-        const wallWidth = 1.2;
-        const wallDepth = 1.2;
+        const wallWidth = 2.5;
+        const wallDepth = 2.5;
 
         // menengahkan maze ke tengah scene
         const offsetX = (layout[0].length * wallWidth) / 2;
@@ -35,8 +35,7 @@ export default class Maze {
                 // cek di posisi i,j (1 = wall, 0 = path, 2 = quiz)
                 if (layout[i][j] === 1) {
                     // buat wall
-                    const wall = new Wall(wallWidth, wallHeight, wallDepth, wallColor);
-                    // const wall = new Wall(wallWidth, wallHeight, wallDepth, wallTexture);
+                    const wall = new Wall(wallWidth, wallHeight, wallDepth, material);
                     
                     // set posisi wall sesuai grid
                     const posX = j * wallWidth - offsetX + wallWidth / 2;

@@ -2,9 +2,9 @@ import * as THREE from "three";
 export default class Wall {
     // buat wall dengan ukuran dan warna dari parameter
     // width = lebar, height = tinggi, depth = panjang (kedalaman)
-    constructor(width, height, depth, color) {
+    constructor(width, height, depth, material) {
         const geometry = new THREE.BoxGeometry(width, height, depth);
-        const material = new THREE.MeshBasicMaterial({ color: color });
+        geometry.setAttribute('uv2', new THREE.BufferAttribute(geometry.attributes.uv.array, 2));
         this.mesh = new THREE.Mesh(geometry, material);
         this.hitbox = new THREE.Box3().setFromObject(this.mesh);
     }

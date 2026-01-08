@@ -9,6 +9,7 @@ function shuffle(arr) {
     return arr;
 }
 
+// fungsi untuk menghitung jarak Manhattan (menggunakan AI)
 function distance(a, b) {
     return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
 }
@@ -70,17 +71,18 @@ export function generateMazeLayout(rows, cols) {
     // start dari (1,1)
     path(1, 1);
     // end di (rows-2, cols-2)
-
     return maze;
 }
 
 export function generateQuizLayout(maze, quizCount, minDistance = 3) {
+    // ambil ukuran maze
     const rows = maze.length;
     const cols = maze[0].length;
 
     const paths = [];
     const quizzes = [];
 
+    // ambil semua koordinat path
     for (let i = 1; i < rows - 1; i++) {
         for (let j = 1; j < cols - 1; j++) {
             if (maze[i][j] === 0) {
@@ -89,6 +91,7 @@ export function generateQuizLayout(maze, quizCount, minDistance = 3) {
         }
     }
 
+    // acak posisi path
     shuffle(paths);
 
     for (const cell of paths) {
@@ -96,6 +99,7 @@ export function generateQuizLayout(maze, quizCount, minDistance = 3) {
 
         let valid = true;
 
+        // cek jarak ke quiz lain
         for (const q of quizzes) {
             if (distance(cell, q) < minDistance) {
                 valid = false;
@@ -103,6 +107,7 @@ export function generateQuizLayout(maze, quizCount, minDistance = 3) {
             }
         }
 
+        // jika jarak aman, ubah jadi quiz
         if (valid) {
             maze[cell.x][cell.y] = 2;
             quizzes.push(cell);
