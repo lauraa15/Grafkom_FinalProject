@@ -15,6 +15,10 @@ export default class Wall {
         this.mesh.position.set(x, y, z);
     }
 
+    getType(){
+        return "Wall"
+    }
+
     addToScene(scene) {
         scene.add(this.mesh);
     }

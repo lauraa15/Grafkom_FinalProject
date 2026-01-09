@@ -9,9 +9,9 @@ export default class Maze {
         this.elements = [];
     }
 
-    // menambahkan wall ke array
-    addElement(wall) {
-        this.elements.push(wall);
+    // menambahkan element ke array
+    addElement(element) {
+        this.elements.push(element);
     }
 
     // menambahkan semua wall ke scene
@@ -20,7 +20,7 @@ export default class Maze {
     }
 
     // generate maze dari layout 
-    generateMaze(layout, wallHeight, wallMaterial, groundMaterial) {
+    generateMaze(layout, wallHeight, wallMaterial, groundMaterial, gemMaterial) {
         // ukuran wall
         const wallWidth = 2.5;
         const wallDepth = 2.5;
@@ -45,9 +45,9 @@ export default class Maze {
                 }
                 else if (layout[i][j] === 2) {
                     // buat quiz 
-                    const quiz = new Quiz(0.5, 0x00ff00);
+                    const quiz = new Quiz(0.5, gemMaterial);
 
-                    quiz.setPosition(posX, 1, posZ);
+                    quiz.setPosition(posX, 0.8, posZ);
                     this.addElement(quiz);
 
                     const ground = new Ground(wallWidth, wallHeight, groundMaterial);

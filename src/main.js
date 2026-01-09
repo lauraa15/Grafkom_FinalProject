@@ -1,6 +1,5 @@
 import * as THREE from "three";
 import Maze from "./maze.js";
-import Ground from "./ground.js";
 import { generateMazeLayout, generateQuizLayout } from "./mazeGenerator.js";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { PointLight, PointLightHelper } from "three/webgpu";
@@ -18,6 +17,9 @@ document.body.appendChild(renderer.domElement);
 
 cam.position.y = 2;
 cam.position.z = 50;
+
+// Clock
+const clock = new THREE.Clock();
 
 // loader
 const textureLoader = new THREE.TextureLoader();
@@ -37,6 +39,13 @@ const groundNormalMap = textureLoader.load("/textures/ground/PavingStones139_1K-
 const groundRoughnessMap = textureLoader.load("/textures/ground/PavingStones139_1K-JPG_Roughness.jpg");
 const groundAoMap = textureLoader.load("/textures/ground/PavingStones139_1K-JPG_AmbientOcclusion.jpg");
 const groundDisplacementMap = textureLoader.load("/textures/ground/PavingStones139_1K-JPG_Displacement.jpg");
+
+const gemColorMap = textureLoader.load("/textures/gem/Gem_1K-JPG_Color.jpg");
+gemColorMap.colorSpace = THREE.SRGBColorSpace;
+const gemNormalMap = textureLoader.load("/textures/gem/Gem_1K-JPG_NormalGL.jpg");
+const gemRoughnessMap = textureLoader.load("/textures/gem/Gem_1K-JPG_Roughness.jpg");
+const gemMetalness = textureLoader.load("/textures/gem/Gem_1K-JPG_Metalness.jpg");
+const gemDisplacementMap = textureLoader.load("/textures/gem/Gem_1K-JPG_Displacement.jpg");
 
 // buat material wall
 const bushMaterial = new THREE.MeshStandardMaterial({
@@ -61,6 +70,19 @@ const groundMaterial = new THREE.MeshStandardMaterial({
     color: 0x333333
 })
 
+const gemMaterial = new THREE.MeshStandardMaterial({
+    map: gemColorMap,
+    normalMap: gemNormalMap,
+    roughnessMap: gemRoughnessMap,
+    metalnessMap: gemMetalness,
+    displacementMap: gemDisplacementMap,
+    displacementScale: 0.00001,
+    roughness: 1,
+    metalness: 1,
+    emissive: 0x2f8f5f,
+    emissiveIntensity: 0.5,
+})
+
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
 scene.add(ambientLight);
 
@@ -79,7 +101,7 @@ const cols = 20; // panjang maze
 
 const mazeLayout = generateMazeLayout(rows, cols);
 const quizLayout = generateQuizLayout(mazeLayout, 5, rows / 2);
-maze.generateMaze(quizLayout, 3, bushMaterial, groundMaterial);
+maze.generateMaze(quizLayout, 3, bushMaterial, groundMaterial, gemMaterial);
 maze.addToScene(scene);
 
 // controls
@@ -88,6 +110,15 @@ const controls = new OrbitControls(cam, renderer.domElement);
 function draw() {
     controls.update();
     renderer.render(scene, cam);
+
+    const elapsedTime = clock.getElapsedTime();
+
+    for (const element of maze.elements) {
+        if (element.getType() === "Quiz") {
+            element.update(elapsedTime);
+        }
+    }
+
     requestAnimationFrame(draw);
 }
 draw();

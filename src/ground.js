@@ -13,6 +13,10 @@ export default class Ground {
         this.mesh.position.set(x, y, z);
     }
 
+    getType(){
+        return "Ground"
+    }
+
     addToScene(scene) {
         scene.add(this.mesh);
     }
