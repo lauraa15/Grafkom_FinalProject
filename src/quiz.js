@@ -18,15 +18,18 @@ export default class Quiz {
         this.status = 'active';
 
         // set animasi
-        this.baseY = this.mesh.position.y
-        this.floatAmplitude = 0.1;
-        this.floatSpeed = 1;
-        this.offset = Math.random() * Math.PI * 2;
+        this.baseY = this.mesh.position.y;
+        this.speed = 0.0025;
+        this.maxY = this.baseY + 1;
+        this.minY = this.baseY;
+        this.direction = 1;
     }
 
     setPosition(x, y, z) {
         this.mesh.position.set(x, y, z);
         this.baseY = this.mesh.position.y
+        this.maxY = this.baseY + 0.1;
+        this.minY = this.baseY - 0.2;
     }
 
     getType() {
@@ -42,8 +45,12 @@ export default class Quiz {
         scene.add(this.mesh);
     }
 
-    update(time) {
-        this.mesh.position.y = this.baseY + Math.sin(time * this.floatSpeed + this.offset) * this.floatAmplitude;
+    update() {
+        this.mesh.position.y += this.speed * this.direction
+
+        if ((this.mesh.position.y >= this.maxY) || (this.mesh.position.y <= this.minY)) {
+            this.direction *= -1
+        }
 
         this.mesh.rotation.y += 0.01;
     }

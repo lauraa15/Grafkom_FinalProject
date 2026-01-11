@@ -74,7 +74,7 @@ const gemTexture = loadTexture(
 // pakai (...texture) biar langsung pakai attribute sesuai dengan loader
 const bushMaterial = new THREE.MeshStandardMaterial({
     ...bushTexture,
-    displacementScale: 0.01,
+    displacementScale: 0.00001,
     roughness: 1,
     color: 0x2f4f2f,
 })
@@ -123,11 +123,9 @@ function draw() {
     controls.update();
     renderer.render(scene, cam);
 
-    const elapsedTime = clock.getElapsedTime();
-
     for (const element of maze.elements) {
         if (element.getType() === "Quiz") {
-            element.update(elapsedTime);
+            element.update();
         }
     }
 

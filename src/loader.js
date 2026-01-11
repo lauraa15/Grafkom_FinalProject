@@ -7,20 +7,25 @@ export function loadTexture(path, options = {}) {
         maps.map.colorSpace = THREE.SRGBColorSpace;
     }
 
-    if (options.normal !== false)
+    if (options.normal !== false) {
         maps.normalMap = textureLoader.load(`/textures/${path.folder}/${path.name}_NormalGL.jpg`);
+    }
 
-    if (options.roughness !== false)
+    if (options.roughness !== false) {
         maps.roughnessMap = textureLoader.load(`/textures/${path.folder}/${path.name}_Roughness.jpg`);
+    }
 
-    if (options.metalness !== false)
+    if (options.metalness !== false) {
         maps.metalnessMap = textureLoader.load(`/textures/${path.folder}/${path.name}_Metalness.jpg`);
+    }
 
-    if (options.displacement)
+    if (options.displacement) {
         maps.displacementMap = textureLoader.load(`/textures/${path.folder}/${path.name}_Displacement.jpg`);
+    }
 
-    if (options.ao)
+    if (options.ao) {
         maps.aoMap = textureLoader.load(`/textures/${path.folder}/${path.name}_AmbientOcclusion.jpg`);
+    }
 
     return maps;
 }
