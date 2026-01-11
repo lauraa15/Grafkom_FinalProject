@@ -1,8 +1,10 @@
 import * as THREE from "three";
 import Maze from "./maze.js";
 import { generateMazeLayout, generateQuizLayout } from "./mazeGenerator.js";
+import { loadTexture } from "./loader.js"
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import { PointLight, PointLightHelper } from "three/webgpu";
+import { MeshStandardMaterial, PointLight, PointLightHelper } from "three/webgpu";
+import { metalness, roughness, triNoise3D } from "three/tsl";
 
 // scene
 const scene = new THREE.Scene();
@@ -24,63 +26,73 @@ const clock = new THREE.Clock();
 // loader
 const textureLoader = new THREE.TextureLoader();
 
-// load wall textures
+// load texture
 // pakai 1K texture supaya ga berat
-const bushColorMap = textureLoader.load("/textures/bush/Grass001_1K-JPG_Color.jpg");
-bushColorMap.colorSpace = THREE.SRGBColorSpace;
-const bushNormalMap = textureLoader.load("/textures/bush/Grass001_1K-JPG_NormalGL.jpg");
-const bushRoughnessMap = textureLoader.load("/textures/bush/Grass001_1K-JPG_Roughness.jpg");
-const bushAoMap = textureLoader.load("/textures/bush/Grass001_1K-JPG_AmbientOcclusion.jpg");
-const bushDisplacementMap = textureLoader.load("/textures/bush/Grass001_1K-JPG_Displacement.jpg");
+const bushTexture = loadTexture(
+    {
+        folder: "bush",
+        name: "Grass001_1K-JPG"
+    },
+    {
+        ao: true,
+        color: true,
+        displacement: true,
+        normal: true,
+        roughness: true,
+    }
+)
 
-const groundColorMap = textureLoader.load("/textures/ground/PavingStones139_1K-JPG_Color.jpg");
-groundColorMap.colorSpace = THREE.SRGBColorSpace;
-const groundNormalMap = textureLoader.load("/textures/ground/PavingStones139_1K-JPG_NormalGL.jpg");
-const groundRoughnessMap = textureLoader.load("/textures/ground/PavingStones139_1K-JPG_Roughness.jpg");
-const groundAoMap = textureLoader.load("/textures/ground/PavingStones139_1K-JPG_AmbientOcclusion.jpg");
-const groundDisplacementMap = textureLoader.load("/textures/ground/PavingStones139_1K-JPG_Displacement.jpg");
+const groundTexture = loadTexture(
+    {
+        folder: "ground",
+        name: "PavingStones139_1K-JPG"
+    },
+    {
+        ao: true,
+        color: true,
+        displacement: true,
+        normal: true,
+        rougness: true,
+    }
+)
 
-const gemColorMap = textureLoader.load("/textures/gem/Gem_1K-JPG_Color.jpg");
-gemColorMap.colorSpace = THREE.SRGBColorSpace;
-const gemNormalMap = textureLoader.load("/textures/gem/Gem_1K-JPG_NormalGL.jpg");
-const gemRoughnessMap = textureLoader.load("/textures/gem/Gem_1K-JPG_Roughness.jpg");
-const gemMetalness = textureLoader.load("/textures/gem/Gem_1K-JPG_Metalness.jpg");
-const gemDisplacementMap = textureLoader.load("/textures/gem/Gem_1K-JPG_Displacement.jpg");
+const gemTexture = loadTexture(
+    {
+        folder: "gem",
+        name: "Gem_1K-JPG",
+    },
+    {
+        color: true,
+        displacement: true,
+        metalness: true,
+        normal: true,
+        roughness: true,
+    }
+)
 
-// buat material wall
+// Material
+// pakai (...texture) biar langsung pakai attribute sesuai dengan loader
 const bushMaterial = new THREE.MeshStandardMaterial({
-    map: bushColorMap,
-    normalMap: bushNormalMap,
-    roughnessMap: bushRoughnessMap,
-    aoMap: bushAoMap,
-    displacementMap: bushDisplacementMap,
+    ...bushTexture,
     displacementScale: 0.01,
     roughness: 1,
-    color: 0x2f4f2f
-});
+    color: 0x2f4f2f,
+})
 
-const groundMaterial = new THREE.MeshStandardMaterial({
-    map: groundColorMap,
-    normalMap: groundNormalMap,
-    roughnessMap: groundRoughnessMap,
-    aoMap: groundAoMap,
-    displacementMap: groundDisplacementMap,
+const groundMaterial = new MeshStandardMaterial({
+    ...groundTexture,
     displacementScale: 0.01,
     roughness: 1,
-    color: 0x333333
+    color: 0x333333,
 })
 
 const gemMaterial = new THREE.MeshStandardMaterial({
-    map: gemColorMap,
-    normalMap: gemNormalMap,
-    roughnessMap: gemRoughnessMap,
-    metalnessMap: gemMetalness,
-    displacementMap: gemDisplacementMap,
+    ...gemTexture,
     displacementScale: 0.00001,
     roughness: 1,
     metalness: 1,
     emissive: 0x2f8f5f,
-    emissiveIntensity: 0.5,
+    emissiveIntensity: 0.5
 })
 
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
