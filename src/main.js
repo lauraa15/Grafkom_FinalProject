@@ -7,6 +7,7 @@ import { PointerLockControls } from "three/examples/jsm/controls/PointerLockCont
 import { getRandomSpawn } from "./spawn.js";
 import { createCollisionChecker } from "./collision.js";
 import { updatePlayerMovement } from "./movement.js";
+import { questions, generateQuestions } from "./quizData.js";
 
 // scene
 const scene = new THREE.Scene();
@@ -134,12 +135,65 @@ const move = {
     left: false,
     right: false
 };
+
+// quiz
+const quizElements = maze.elements.filter(el => el.getType() === "Quiz");
+generateQuestions(quizElements);
+
+let points = 0;
+let wrongAnswers = 0;
+let currentQuiz = null;
+const pressEPrompt = document.getElementById('press-e-prompt');
+const quizModal = document.getElementById('quiz-modal');
+const questionText = document.getElementById('question-text');
+const optionBtns = document.querySelectorAll('.option-btn');
+
+// event listeners buat quiz options
+optionBtns.forEach((btn, index) => {
+    btn.addEventListener('click', () => {
+        if (currentQuiz) {
+            const question = questions[currentQuiz.getQuestionId()];
+            const isCorrect = index === question.correct;
+            optionBtns.forEach((b, i) => {
+                if (i === question.correct) {
+                    b.classList.add('correct');
+                } else if (i === index && !isCorrect) {
+                    b.classList.add('incorrect');
+                }
+            });
+            setTimeout(() => {
+                if (isCorrect) {
+                    points++;
+                    if (points >= 3) {
+                        alert("Congratulations! You've successfully escaped this maze. Go find the exit!");
+                        // terus diapain lagi ininya?
+                    }
+                } else {
+                    wrongAnswers++;
+                    if (wrongAnswers >= 3) {
+                        alert("Game Over! You have answered incorrectly 3 times.");
+                        
+                        location.reload(); // reset
+                    }
+                }
+                currentQuiz.setStatus('completed');
+                closeQuizModal();
+            }, 1000);
+        }
+    });
+});
+
 document.addEventListener("keydown", (e) => {
     switch (e.code) {
         case "KeyW": move.forward = true; break;
         case "KeyS": move.backward = true; break;
         case "KeyA": move.left = true; break;
         case "KeyD": move.right = true; break;
+        case "KeyE": 
+            if (currentQuiz && currentQuiz.status === 'active') {
+                openQuizModal(currentQuiz);
+            }
+            break;
     }
 });
 
@@ -156,6 +210,26 @@ const checkCollision = createCollisionChecker(maze, 0.4);
 
 let prevTime = performance.now();
 
+// quiz functions
+function openQuizModal(quiz) {
+    if (points >= 3 || wrongAnswers >= 3) return;
+    const question = questions[quiz.getQuestionId()];
+    questionText.textContent = question.question;
+    optionBtns.forEach((btn, index) => {
+        btn.textContent = question.options[index];
+        btn.classList.remove('correct', 'incorrect');
+    });
+    quizModal.style.display = 'block';
+    controls.unlock();
+}
+
+function closeQuizModal() {
+    quizModal.style.display = 'none';
+    controls.lock();
+    currentQuiz = null;
+    pressEPrompt.style.display = 'none';
+}
+
 function animate() {
     requestAnimationFrame(animate);
     const time = performance.now();
@@ -170,6 +244,28 @@ function animate() {
         delta,
         checkCollision
     });
+
+    // jarak ke gemstone nya
+    let nearestQuiz = null;
+    let minDistance = Infinity;
+    for (const element of maze.elements) {
+        if (element.getType() === "Quiz" && element.status === 'active') {
+            const distance = cam.position.distanceTo(element.mesh.position);
+            if (distance < 3 && distance < minDistance) {
+                minDistance = distance;
+                nearestQuiz = element;
+            }
+        }
+    }
+    // kalo udah jawab bener 3 soal, gabisa buka gemstone yg belum di jawab
+    if (nearestQuiz && points < 3 && wrongAnswers < 3) {
+        pressEPrompt.style.display = 'block';
+        currentQuiz = nearestQuiz;
+    } else {
+        pressEPrompt.style.display = 'none';
+        currentQuiz = null;
+    }
+
     renderer.render(scene, cam);
     for (const element of maze.elements) {
         if (element.getType() === "Quiz") {
