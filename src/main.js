@@ -17,6 +17,8 @@ const cam = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeig
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
 document.body.appendChild(renderer.domElement);
 
 // Clock
@@ -48,7 +50,7 @@ const groundTexture = loadTexture(
         color: true,
         displacement: true,
         normal: true,
-        rougness: true,
+        roughness: true,
     }
 )
 
@@ -88,9 +90,10 @@ const gemMaterial = new THREE.MeshStandardMaterial({
     displacementScale: 0.00001,
     roughness: 1,
     metalness: 1,
-    emissive: 0x2f8f5f,
+    emissive: 0x56e62b,
     emissiveIntensity: 0.5
 })
+
 
 const ambientLight = new THREE.AmbientLight(0xffffff, 4);
 scene.add(ambientLight);
@@ -102,6 +105,8 @@ scene.add(pointLight)
 
 const pointLightHelper = new THREE.PointLightHelper(pointLight, 5);
 scene.add(pointLightHelper)
+
+
 
 // Maze
 const maze = new Maze();

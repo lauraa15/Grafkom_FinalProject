@@ -5,12 +5,30 @@ export default class Quiz {
         // nanti diubah scroll
         const geometry = new THREE.OctahedronGeometry(size);
         this.mesh = new THREE.Mesh(geometry, gemMaterial);
+        const edgesGeometry = new THREE.EdgesGeometry(geometry);
+
+        // material garis (bisa disesuaikan warnanya)
+        const edgeMaterial = new THREE.LineBasicMaterial({
+            color: 0x38c811,
+            transparent: true,
+            opacity: 0.3,
+            linewidth: 5
+        });
+        // bikin line dari edges
+        this.edge = new THREE.LineSegments(edgesGeometry, edgeMaterial);
+
+        // sedikit lebih besar biar gak z-fighting
+        this.edge.scale.set(1.01, 1.01, 1.01);
+
+        // tempelin ke mesh
+        this.mesh.add(this.edge);
         
         // lampu supaya keliatan glowing
         this.light = new THREE.PointLight(gemMaterial.emissive, 2, 5);
         this.light.position.set(0, 1, 0);
         this.mesh.add(this.light);
         this.mesh.castShadow = true;
+        this.mesh.receiveShadow = true;
 
         // status quiz (active/inactive/completed)
         // active = scroll muncul, inactive = scroll tidak muncul, completed = scroll transparan
