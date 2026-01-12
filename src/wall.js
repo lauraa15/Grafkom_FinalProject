@@ -10,9 +10,14 @@ export default class Wall {
         this.mesh.receiveShadow = true
         this.hitbox = new THREE.Box3().setFromObject(this.mesh);
     }
-
+    
     setPosition(x, y, z) {
         this.mesh.position.set(x, y, z);
+        this.updateHitbox();
+    }
+    
+    updateHitbox(){
+        this.hitbox.setFromObject(this.mesh);
     }
 
     getType(){

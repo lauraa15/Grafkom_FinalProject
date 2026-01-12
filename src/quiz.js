@@ -1,17 +1,16 @@
 import * as THREE from "three";
-import Ground from "./ground";
 export default class Quiz {
     constructor(size, gemMaterial) {
         // bentuk gemstone
         // nanti diubah scroll
         const geometry = new THREE.OctahedronGeometry(size);
         this.mesh = new THREE.Mesh(geometry, gemMaterial);
-        this.mesh.castShadow = true;
-
+        
         // lampu supaya keliatan glowing
         this.light = new THREE.PointLight(gemMaterial.emissive, 2, 5);
         this.light.position.set(0, 1, 0);
         this.mesh.add(this.light);
+        this.mesh.castShadow = true;
 
         // status quiz (active/inactive/completed)
         // active = scroll muncul, inactive = scroll tidak muncul, completed = scroll transparan

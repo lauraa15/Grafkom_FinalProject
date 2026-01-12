@@ -2,14 +2,16 @@ import * as THREE from "three";
 import Maze from "./maze.js";
 import { generateMazeLayout, generateQuizLayout } from "./mazeGenerator.js";
 import { loadTexture } from "./loader.js"
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import { MeshStandardMaterial, PointLight, PointLightHelper } from "three/webgpu";
-import { metalness, roughness, triNoise3D } from "three/tsl";
+
+import { PointerLockControls } from "three/examples/jsm/controls/PointerLockControls.js";
+import { getRandomSpawn } from "./spawn.js";
+import { createCollisionChecker } from "./collision.js";
+import { updatePlayerMovement } from "./movement.js";
 
 // scene
 const scene = new THREE.Scene();
 // cam
-const cam = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 100);
+const cam = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
 
 // render
 const renderer = new THREE.WebGLRenderer();
@@ -17,14 +19,8 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.shadowMap.enabled = true;
 document.body.appendChild(renderer.domElement);
 
-cam.position.y = 2;
-cam.position.z = 50;
-
 // Clock
 const clock = new THREE.Clock();
-
-// loader
-const textureLoader = new THREE.TextureLoader();
 
 // load texture
 // pakai 1K texture supaya ga berat
@@ -79,11 +75,12 @@ const bushMaterial = new THREE.MeshStandardMaterial({
     color: 0x2f4f2f,
 })
 
-const groundMaterial = new MeshStandardMaterial({
+const groundMaterial = new THREE.MeshStandardMaterial({
     ...groundTexture,
     displacementScale: 0.01,
     roughness: 1,
     color: 0x333333,
+    side: THREE.DoubleSide
 })
 
 const gemMaterial = new THREE.MeshStandardMaterial({
@@ -95,42 +92,85 @@ const gemMaterial = new THREE.MeshStandardMaterial({
     emissiveIntensity: 0.5
 })
 
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+const ambientLight = new THREE.AmbientLight(0xffffff, 4);
 scene.add(ambientLight);
 
-const pointLight = new PointLight(0xffffff, 1000)
+const pointLight = new THREE.PointLight(0xffffff, 100)
 pointLight.position.set(0, 20, 0)
 pointLight.castShadow = true
 scene.add(pointLight)
 
-const pointLightHelper = new PointLightHelper(pointLight, 5);
+const pointLightHelper = new THREE.PointLightHelper(pointLight, 5);
 scene.add(pointLightHelper)
 
 // Maze
 const maze = new Maze();
-const rows = 20; // lebar maze
-const cols = 20; // panjang maze
+const rows = 8; // lebar maze
+const cols = 8; // panjang maze
 
 const mazeLayout = generateMazeLayout(rows, cols);
 const quizLayout = generateQuizLayout(mazeLayout, 5, rows / 2);
 maze.generateMaze(quizLayout, 3, bushMaterial, groundMaterial, gemMaterial);
 maze.addToScene(scene);
 
+// spawn player
+const spawn = getRandomSpawn(mazeLayout, 2.5, 2.5);
+console.log(spawn)
+cam.position.copy(spawn);   
+
 // controls
-const controls = new OrbitControls(cam, renderer.domElement);
+const controls = new PointerLockControls(cam, renderer.domElement);
+document.addEventListener('click', () => {
+    controls.lock();
+});
+const move = {
+    forward: false,
+    backward: false,
+    left: false,
+    right: false
+};
+document.addEventListener("keydown", (e) => {
+    switch (e.code) {
+        case "KeyW": move.forward = true; break;
+        case "KeyS": move.backward = true; break;
+        case "KeyA": move.left = true; break;
+        case "KeyD": move.right = true; break;
+    }
+});
 
-function draw() {
-    controls.update();
+document.addEventListener("keyup", (e) => {
+    switch (e.code) {
+        case "KeyW": move.forward = false; break;
+        case "KeyS": move.backward = false; break;
+        case "KeyA": move.left = false; break;
+        case "KeyD": move.right = false; break;
+    }
+});
+
+const checkCollision = createCollisionChecker(maze, 0.4);
+
+let prevTime = performance.now();
+
+function animate() {
+    requestAnimationFrame(animate);
+    const time = performance.now();
+    const delta = (time - prevTime) / 1000;
+    prevTime = time;
+
+    updatePlayerMovement({
+        cam,
+        controls,
+        move,
+        speed: 5,
+        delta,
+        checkCollision
+    });
     renderer.render(scene, cam);
-
     for (const element of maze.elements) {
         if (element.getType() === "Quiz") {
             element.update();
         }
     }
-
-    requestAnimationFrame(draw);
 }
-draw();
 
-renderer.render(scene, cam);
+animate();
