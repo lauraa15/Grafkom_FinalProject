@@ -96,16 +96,39 @@ const gemMaterial = new THREE.MeshStandardMaterial({
 })
 
 // lighting
-const ambientLight = new THREE.AmbientLight(0xffffff, 4);
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
 scene.add(ambientLight);
 
-const pointLight = new THREE.PointLight(0xffffff, 100)
-pointLight.position.set(0, 20, 0)
-pointLight.castShadow = true
-scene.add(pointLight)
+// const pointLight = new THREE.PointLight(0xffffff, 100)
+// pointLight.position.set(0, 20, 0)
+// pointLight.castShadow = true
+// scene.add(pointLight)
 
-const pointLightHelper = new THREE.PointLightHelper(pointLight, 5);
-scene.add(pointLightHelper)
+// const pointLightHelper = new THREE.PointLightHelper(pointLight, 5);
+// scene.add(pointLightHelper)
+
+// flashlight
+const flashlight = new THREE.SpotLight(0xffffff, 10);
+flashlight.angle = Math.PI / 6; // cone angle
+flashlight.penumbra = 0.3; // soft edges
+flashlight.decay = 1.5;
+flashlight.distance = 50;
+flashlight.castShadow = true;
+flashlight.shadow.mapSize.width = 1024;
+flashlight.shadow.mapSize.height = 1024;
+flashlight.shadow.camera.near = 0.5;
+flashlight.shadow.camera.far = 50;
+
+// target for the flashlight to point at
+const flashlightTarget = new THREE.Object3D();
+scene.add(flashlightTarget);
+flashlight.target = flashlightTarget;
+
+cam.add(flashlight);
+flashlight.position.set(0, 0, 0); // at camera position
+scene.add(cam); // add camera to scene so flashlight is rendered
+
+let flashlightOn = true;
 
 // maze genrtae
 const maze = new Maze();
@@ -296,9 +319,6 @@ function loadHorrorMask() {
     );
 }
 
-const horrorMaskLight = new THREE.DirectionalLight(0x88ccff, 2);
-horrorMaskLight.position.set(0, 0, -cols + 100);
-scene.add(horrorMaskLight);
 
 document.addEventListener("keydown", (e) => {
     if (!gameStarted || menuActive) return;
@@ -308,6 +328,11 @@ document.addEventListener("keydown", (e) => {
         case "KeyS": move.backward = true; break;
         case "KeyA": move.left = true; break;
         case "KeyD": move.right = true; break;
+        case "KeyF": 
+            // toggle flashlight
+            flashlightOn = !flashlightOn;
+            flashlight.visible = flashlightOn;
+            break;
         case "KeyE":
             if (currentQuiz && currentQuiz.status === 'active') {
                 openQuizModal(currentQuiz);
@@ -366,6 +391,11 @@ function animate() {
             delta,
             checkCollision
         });
+
+        // flaslight
+        const direction = new THREE.Vector3();
+        cam.getWorldDirection(direction);
+        flashlightTarget.position.copy(cam.position).add(direction.multiplyScalar(10));
 
         // horror mask ngeliatin player
         if (horrorMask) {
