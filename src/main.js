@@ -8,6 +8,7 @@ import { getRandomSpawn } from "./spawn.js";
 import { createCollisionChecker } from "./collision.js";
 import { updatePlayerMovement } from "./movement.js";
 import { questions, generateQuestions } from "./quizData.js";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
 // scene
 const scene = new THREE.Scene();
@@ -70,7 +71,7 @@ const gemTexture = loadTexture(
 )
 
 // Material
-// pakai (...texture) biar langsung pakai attribute sesuai dengan loader
+// pake (...texture) biar pake attribute sesuai loader
 const bushMaterial = new THREE.MeshStandardMaterial({
     ...bushTexture,
     displacementScale: 0.00001,
@@ -116,7 +117,7 @@ const cols = 8; // panjang maze
 
 const mazeLayout = generateMazeLayout(rows, cols);
 const quizLayout = generateQuizLayout(mazeLayout, 5, rows / 2);
-maze.generateMaze(quizLayout, 3, bushMaterial, groundMaterial, gemMaterial);
+maze.generateMaze(quizLayout, {wallWidth: 2.5, wallHeight: 3, wallDepth: 2.5}, bushMaterial, groundMaterial, gemMaterial);
 maze.addToScene(scene);
 
 // spawn player
@@ -183,6 +184,37 @@ optionBtns.forEach((btn, index) => {
     });
 });
 
+// load horror mask model
+const gltfLoader = new GLTFLoader();
+let horrorMask = null;
+
+gltfLoader.load(
+    "/models/horrorMask/horror_mask.glb",
+    (gltf) => {
+        horrorMask = gltf.scene;
+        horrorMask.scale.set(200, 200, 200);
+
+        horrorMask.position.set(0, 40, -cols -75);
+
+        horrorMask.traverse((child) => {
+            if (child.isMesh) {
+                child.castShadow = true;
+                child.receiveShadow = false;
+            }
+        });
+
+        scene.add(horrorMask);
+    },
+    undefined,
+    (error) => {
+        console.error("Failed to load Mask:", error);
+    }
+);
+
+const horrorMaskLight = new THREE.DirectionalLight(0x88ccff, 2);
+horrorMaskLight.position.set(0, 0, -cols + 100);
+scene.add(horrorMaskLight);
+
 document.addEventListener("keydown", (e) => {
     switch (e.code) {
         case "KeyW": move.forward = true; break;
@@ -244,6 +276,11 @@ function animate() {
         delta,
         checkCollision
     });
+
+    // bikin horror mask ngeliatin player
+    if (horrorMask) {
+        horrorMask.lookAt(cam.position);
+    }
 
     // jarak ke gemstone nya
     let nearestQuiz = null;

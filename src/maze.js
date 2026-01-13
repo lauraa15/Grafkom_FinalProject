@@ -20,10 +20,11 @@ export default class Maze {
     }
 
     // generate maze dari layout 
-    generateMaze(layout, wallHeight, wallMaterial, groundMaterial, gemMaterial) {
+    generateMaze(layout, wall, wallMaterial, groundMaterial, gemMaterial) {
         // ukuran wall
-        const wallWidth = 2.5;
-        const wallDepth = 2.5;
+        const wallWidth = wall.wallWidth;
+        const wallDepth = wall.wallDepth;
+        const wallHeight = wall.wallHeight;
 
         // menengahkan maze ke tengah scene
         const offsetX = (layout[0].length * wallWidth) / 2;
