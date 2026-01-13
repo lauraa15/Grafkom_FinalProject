@@ -130,14 +130,15 @@ scene.add(cam); // add camera to scene so flashlight is rendered
 
 let flashlightOn = true;
 
-// maze genrtae
+// maze genertae
 const maze = new Maze();
-const rows = 8; // lebar maze
-const cols = 8; // panjang maze
-
+const rows = 30; // lebar maze
+const cols = 30; // panjang maze
+const wall = { wallWidth: 2.5, wallHeight: 3, wallDepth: 2.5 }
 const mazeLayout = generateMazeLayout(rows, cols);
-const quizLayout = generateQuizLayout(mazeLayout, 5, rows / 2);
-maze.generateMaze(quizLayout, { wallWidth: 2.5, wallHeight: 3, wallDepth: 2.5 }, bushMaterial, groundMaterial, gemMaterial);
+const quizLayout = generateQuizLayout(mazeLayout, 8, rows / 2);
+quizLayout[rows][cols - 1] = 0
+maze.generateMaze(quizLayout, wall, bushMaterial, groundMaterial, gemMaterial);
 
 // spawn player
 const spawn = getRandomSpawn(mazeLayout, 2.5, 2.5);
@@ -271,7 +272,7 @@ optionBtns.forEach((btn, index) => {
             setTimeout(() => {
                 if (isCorrect) {
                     points++;
-                    if (points >= 3) {
+                    if (points >= 5) {
                         alert("Congratulations! You've successfully escaped this maze. Go find the exit!");
                         // terus diapain lagi ininya?
                     }
@@ -319,6 +320,50 @@ function loadHorrorMask() {
     );
 }
 
+const offsetX = (quizLayout[0].length * wall.wallWidth) / 2;
+const offsetZ = (quizLayout.length * wall.wallDepth) / 2;
+const posX = (rows-1) * wall.wallWidth - offsetX + wall.wallWidth / 2;
+const posZ = cols * wall.wallDepth - offsetZ + wall.wallDepth / 2;
+let door = null;
+let actions = [];
+let doorMixer = null;
+let doorHitBox = null;
+gltfLoader.load(
+    "/models/door/door.glb",
+    (gltf) => {
+        door = gltf.scene;
+
+        door.scale.set(2.5, 1.5, 2.5);
+        door.position.set(posX, 0, posZ);
+
+        door.traverse((obj) => {
+            if (obj.isMesh) {
+                obj.castShadow = true;
+                obj.receiveShadow = true;
+            }
+        });
+        scene.add(door);
+
+        doorHitBox = new THREE.Box3();
+        doorHitBox.setFromObject(door);
+        doorHitBox.expandByScalar(0.3); 
+        
+        let doorAnimation = gltf.animations;
+        doorMixer = new THREE.AnimationMixer(door);
+        actions = doorAnimation.map((clip) => doorMixer.clipAction(clip));
+        console.log("Door animations loaded:", actions);
+    },
+    undefined,
+    (error) => {
+        console.error("Failed to load door:", error);
+    }
+);
+
+let shakeInterval = 10;
+let shakeTimer = 0;
+let isShaking = false;
+let shakeDuration = 3;
+let shakeElapsed = 0;
 
 document.addEventListener("keydown", (e) => {
     if (!gameStarted || menuActive) return;
@@ -328,7 +373,7 @@ document.addEventListener("keydown", (e) => {
         case "KeyS": move.backward = true; break;
         case "KeyA": move.left = true; break;
         case "KeyD": move.right = true; break;
-        case "KeyF": 
+        case "KeyF":
             // toggle flashlight
             flashlightOn = !flashlightOn;
             flashlight.visible = flashlightOn;
@@ -383,13 +428,26 @@ function animate() {
     prevTime = time;
 
     if (!menuActive && gameStarted) {
+        // Create a bounding sphere around player for door collision
+        const playerSphere = new THREE.Sphere(cam.position, 0.4);
+        
         updatePlayerMovement({
             cam,
             controls,
             move,
             speed: 5,
             delta,
-            checkCollision
+            checkCollision: (pos) => {
+                // Check maze collision
+                if (checkCollision(pos)) return true;
+                
+                // Check door collision
+                if (doorHitBox && doorHitBox.containsPoint(pos)) {
+                    return true;
+                }
+                
+                return false;
+            }
         });
 
         // flaslight
@@ -427,6 +485,32 @@ function animate() {
             if (element.getType() === "Quiz") {
                 element.update();
             }
+        }
+    }
+
+
+    shakeTimer += delta;
+
+    if (doorMixer) {
+        doorMixer.update(delta);
+    }
+
+    if (!isShaking && shakeTimer >= shakeInterval) {
+        shakeTimer = 0;
+        isShaking = true
+        actions[0].stop();
+        actions[9].reset().play();
+    }
+
+    if (isShaking) {
+        shakeElapsed += delta;
+
+        if (shakeElapsed >= shakeDuration) {
+            isShaking = false;
+            shakeElapsed = 0;
+
+            actions[9].stop();
+            actions[0].reset().play();
         }
     }
 
