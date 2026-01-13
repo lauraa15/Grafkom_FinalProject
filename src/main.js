@@ -127,8 +127,15 @@ cam.position.copy(spawn);
 
 // controls
 const controls = new PointerLockControls(cam, renderer.domElement);
+const backsound = document.getElementById('backsound');
+
 document.addEventListener('click', () => {
     controls.lock();
+    if (backsound.paused) {
+        backsound.play().catch(error => {
+            console.log("Audio error: ", error);
+        });
+    }
 });
 const move = {
     forward: false,
