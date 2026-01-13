@@ -2,7 +2,6 @@ import * as THREE from "three";
 import Maze from "./maze.js";
 import { generateMazeLayout, generateQuizLayout } from "./mazeGenerator.js";
 import { loadTexture } from "./loader.js"
-
 import { PointerLockControls } from "three/examples/jsm/controls/PointerLockControls.js";
 import { getRandomSpawn } from "./spawn.js";
 import { createCollisionChecker } from "./collision.js";
@@ -27,7 +26,7 @@ document.body.appendChild(renderer.domElement);
 const clock = new THREE.Clock();
 
 // load texture
-// pakai 1K texture supaya ga berat
+// pake 1K texture supaya ga berat
 const bushTexture = loadTexture(
     {
         folder: "bush",
@@ -96,7 +95,7 @@ const gemMaterial = new THREE.MeshStandardMaterial({
     emissiveIntensity: 0.5
 })
 
-
+// lighting
 const ambientLight = new THREE.AmbientLight(0xffffff, 4);
 scene.add(ambientLight);
 
@@ -108,35 +107,112 @@ scene.add(pointLight)
 const pointLightHelper = new THREE.PointLightHelper(pointLight, 5);
 scene.add(pointLightHelper)
 
-
-
-// Maze
+// maze genrtae
 const maze = new Maze();
 const rows = 8; // lebar maze
 const cols = 8; // panjang maze
 
 const mazeLayout = generateMazeLayout(rows, cols);
 const quizLayout = generateQuizLayout(mazeLayout, 5, rows / 2);
-maze.generateMaze(quizLayout, {wallWidth: 2.5, wallHeight: 3, wallDepth: 2.5}, bushMaterial, groundMaterial, gemMaterial);
-maze.addToScene(scene);
+maze.generateMaze(quizLayout, { wallWidth: 2.5, wallHeight: 3, wallDepth: 2.5 }, bushMaterial, groundMaterial, gemMaterial);
 
 // spawn player
 const spawn = getRandomSpawn(mazeLayout, 2.5, 2.5);
-console.log(spawn)
-cam.position.copy(spawn);   
+console.log(spawn);
 
 // controls
 const controls = new PointerLockControls(cam, renderer.domElement);
 const backsound = document.getElementById('backsound');
 
-document.addEventListener('click', () => {
+// game udah mulai or not
+let gameStarted = false;
+
+// mulai game dr awal
+function startGame() {
+    gameStarted = true;
+
+    maze.addToScene(scene);
+    cam.position.copy(spawn);
+    document.addEventListener('click', handleGameClick);
+
+    //backsound
+    if (backsound.paused) {
+        backsound.play().catch(error => {
+            console.log("Audio error: ", error);
+        });
+    }
+
+    loadHorrorMask();
+    showClickToPlay();
+}
+
+//overlay start game
+function showClickToPlay() {
+    const overlay = document.createElement('div');
+    overlay.id = 'click-to-play';
+    overlay.innerHTML = '<p>Click anywhere to start playing</p>';
+    overlay.style.cssText =
+        `position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.7);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        cursor: pointer;`;
+    overlay.querySelector('p').style.cssText =
+        `color: white;
+        font-size: 32px;
+        font-family: 'Jolly Lodger', system-ui;`;
+    document.body.appendChild(overlay);
+
+    overlay.addEventListener('click', () => {
+        controls.lock();
+        overlay.remove();
+    });
+}
+// handle click to start game
+function handleGameClick() {
+    if (!gameStarted || menuActive) return;
     controls.lock();
     if (backsound.paused) {
         backsound.play().catch(error => {
             console.log("Audio error: ", error);
         });
     }
+}
+
+// menu
+let menuActive = true;
+const menuModal = document.getElementById('menu-modal');
+const startBtn = document.getElementById('start-btn');
+
+cam.position.set(0, 50, 0);
+cam.lookAt(0, 0, 0);
+
+// start btn buat mulai
+startBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (!menuActive) return;
+
+    menuActive = false;
+    menuModal.style.display = 'none';
+    startGame();
 });
+
+// keyboard buat mulai
+window.addEventListener('keydown', (e) => {
+    if (!menuActive) return;
+    if (e.code === 'Enter' || e.code === 'Space') {
+        menuActive = false;
+        menuModal.style.display = 'none';
+        startGame();
+    }
+});
+// move set
 const move = {
     forward: false,
     backward: false,
@@ -180,7 +256,7 @@ optionBtns.forEach((btn, index) => {
                     wrongAnswers++;
                     if (wrongAnswers >= 3) {
                         alert("Game Over! You have answered incorrectly 3 times.");
-                        
+
                         location.reload(); // reset
                     }
                 }
@@ -191,44 +267,48 @@ optionBtns.forEach((btn, index) => {
     });
 });
 
-// load horror mask model
+// load horror mask
 const gltfLoader = new GLTFLoader();
 let horrorMask = null;
 
-gltfLoader.load(
-    "/models/horrorMask/horror_mask.glb",
-    (gltf) => {
-        horrorMask = gltf.scene;
-        horrorMask.scale.set(200, 200, 200);
+function loadHorrorMask() {
+    gltfLoader.load(
+        "/models/horrorMask/horror_mask.glb",
+        (gltf) => {
+            horrorMask = gltf.scene;
+            horrorMask.scale.set(200, 200, 200);
 
-        horrorMask.position.set(0, 40, -cols -75);
+            horrorMask.position.set(0, 40, -cols - 75);
 
-        horrorMask.traverse((child) => {
-            if (child.isMesh) {
-                child.castShadow = true;
-                child.receiveShadow = false;
-            }
-        });
+            horrorMask.traverse((child) => {
+                if (child.isMesh) {
+                    child.castShadow = true;
+                    child.receiveShadow = false;
+                }
+            });
 
-        scene.add(horrorMask);
-    },
-    undefined,
-    (error) => {
-        console.error("Failed to load Mask:", error);
-    }
-);
+            scene.add(horrorMask);
+        },
+        undefined,
+        (error) => {
+            console.error("Failed to load Mask:", error);
+        }
+    );
+}
 
 const horrorMaskLight = new THREE.DirectionalLight(0x88ccff, 2);
 horrorMaskLight.position.set(0, 0, -cols + 100);
 scene.add(horrorMaskLight);
 
 document.addEventListener("keydown", (e) => {
+    if (!gameStarted || menuActive) return;
+
     switch (e.code) {
         case "KeyW": move.forward = true; break;
         case "KeyS": move.backward = true; break;
         case "KeyA": move.left = true; break;
         case "KeyD": move.right = true; break;
-        case "KeyE": 
+        case "KeyE":
             if (currentQuiz && currentQuiz.status === 'active') {
                 openQuizModal(currentQuiz);
             }
@@ -237,6 +317,8 @@ document.addEventListener("keydown", (e) => {
 });
 
 document.addEventListener("keyup", (e) => {
+    if (!gameStarted) return;
+
     switch (e.code) {
         case "KeyW": move.forward = false; break;
         case "KeyS": move.backward = false; break;
@@ -275,47 +357,50 @@ function animate() {
     const delta = (time - prevTime) / 1000;
     prevTime = time;
 
-    updatePlayerMovement({
-        cam,
-        controls,
-        move,
-        speed: 5,
-        delta,
-        checkCollision
-    });
+    if (!menuActive && gameStarted) {
+        updatePlayerMovement({
+            cam,
+            controls,
+            move,
+            speed: 5,
+            delta,
+            checkCollision
+        });
 
-    // bikin horror mask ngeliatin player
-    if (horrorMask) {
-        horrorMask.lookAt(cam.position);
-    }
+        // horror mask ngeliatin player
+        if (horrorMask) {
+            horrorMask.lookAt(cam.position);
+        }
 
-    // jarak ke gemstone nya
-    let nearestQuiz = null;
-    let minDistance = Infinity;
-    for (const element of maze.elements) {
-        if (element.getType() === "Quiz" && element.status === 'active') {
-            const distance = cam.position.distanceTo(element.mesh.position);
-            if (distance < 3 && distance < minDistance) {
-                minDistance = distance;
-                nearestQuiz = element;
+        // jarak ke gemstone nya
+        let nearestQuiz = null;
+        let minDistance = Infinity;
+        for (const element of maze.elements) {
+            if (element.getType() === "Quiz" && element.status === 'active') {
+                const distance = cam.position.distanceTo(element.mesh.position);
+                if (distance < 3 && distance < minDistance) {
+                    minDistance = distance;
+                    nearestQuiz = element;
+                }
+            }
+        }
+        // kalo udah jawab bener 3 soal, gabisa buka gemstone yg belum di jawab
+        if (nearestQuiz && points < 3 && wrongAnswers < 3) {
+            pressEPrompt.style.display = 'block';
+            currentQuiz = nearestQuiz;
+        } else {
+            pressEPrompt.style.display = 'none';
+            currentQuiz = null;
+        }
+
+        for (const element of maze.elements) {
+            if (element.getType() === "Quiz") {
+                element.update();
             }
         }
     }
-    // kalo udah jawab bener 3 soal, gabisa buka gemstone yg belum di jawab
-    if (nearestQuiz && points < 3 && wrongAnswers < 3) {
-        pressEPrompt.style.display = 'block';
-        currentQuiz = nearestQuiz;
-    } else {
-        pressEPrompt.style.display = 'none';
-        currentQuiz = null;
-    }
 
     renderer.render(scene, cam);
-    for (const element of maze.elements) {
-        if (element.getType() === "Quiz") {
-            element.update();
-        }
-    }
 }
 
 animate();

@@ -88,3 +88,84 @@ body {
     color: #f44336;
     font-weight: bold;
 }
+
+#tv-ui {
+    position: absolute;
+    left: -9999px;
+}
+
+#menu-modal {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: url('public/textures/old-paper-cropped.png') no-repeat center center;
+    background-size: cover;
+    padding: 40px 60px;
+    border-radius: 5px;
+    border: none;
+    box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.6),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+    display: block;
+    min-width: 400px;
+    max-width: 500px;
+    pointer-events: auto;
+    font-family: 'Jolly Lodger', system-ui;
+    text-align: center;
+    z-index: 200;
+}
+
+#menu-modal h1 {
+    margin: 0 0 10px 0;
+    color: #271802;
+    font-size: 48px;
+    font-weight: 400;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+#menu-modal .subtitle {
+    color: #4a3a2a;
+    font-size: 24px;
+    margin: 0 0 30px 0;
+}
+
+#menu-modal .menu-btn {
+    display: block;
+    width: 100%;
+    margin: 15px 0;
+    padding: 15px 30px;
+    background: transparent;
+    border: 2px solid #271802;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 32px;
+    font-family: 'Jolly Lodger', system-ui;
+    color: #271802;
+    transition: all 0.3s ease;
+}
+
+#menu-modal .menu-btn:hover {
+    background: rgba(39, 24, 2, 0.1);
+    transform: scale(1.05);
+}
+
+#menu-modal .controls-info {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(39, 24, 2, 0.3);
+}
+
+#menu-modal .controls-info p {
+    color: #4a3a2a;
+    font-size: 18px;
+    margin: 5px 0;
+    font-family: Arial, sans-serif;
+}
+
+#menu-modal .credits {
+    margin-top: 20px;
+    color: #6a5a4a;
+    font-size: 16px;
+}

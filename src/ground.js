@@ -1,4 +1,5 @@
 import * as THREE from "three";
+
 export default class Ground {
     constructor(width, height, material) {
         const geometry = new THREE.PlaneGeometry(width, height);
