@@ -243,8 +243,17 @@ const move = {
     right: false
 };
 
+// hitung soal yang udah dijawab
+const answeredCount = document.getElementById("answered-count");
+const totalGem = document.getElementById("total-gem");
+const correct = document.getElementById("correct-count");
+const wrong = document.getElementById("wrong-count");
+
 // quiz
 const quizElements = maze.elements.filter(el => el.getType() === "Quiz");
+const totalGems = quizElements.length;
+totalGem.textContent = totalGems;
+
 generateQuestions(quizElements);
 
 let points = 0;
@@ -272,8 +281,7 @@ optionBtns.forEach((btn, index) => {
                 if (isCorrect) {
                     points++;
                     if (points >= 3) {
-                        alert("Congratulations! You've successfully escaped this maze. Go find the exit!");
-                        // terus diapain lagi ininya?
+                        showWinModal();
                     }
                 } else {
                     wrongAnswers++;
@@ -281,14 +289,41 @@ optionBtns.forEach((btn, index) => {
                         alert("Game Over! You have answered incorrectly 3 times.");
 
                         location.reload(); // reset
+
+                        // mo masukin horror mask aja tp maaf gue gaberani natap muka gigi kuning itu
                     }
                 }
+                updateStats();
                 currentQuiz.setStatus('completed');
                 closeQuizModal();
             }, 1000);
         }
     });
 });
+
+// update status soal terjawab
+function updateStats(){
+    const answered = points + wrongAnswers;
+
+    answeredCount.textContent = answered;
+
+    correct.textContent = points;
+    wrong.textContent = wrongAnswers;
+}
+
+// pop up menang
+const winModal = document.getElementById("win-modal");
+const restartBtn = document.getElementById("restart-btn");
+
+function showWinModal(){
+    winModal.style.display = "flex";
+    controls.unlock();
+}
+
+restartBtn.addEventListener("click", ()=>{
+    location.reload();
+});
+
 
 // load horror mask
 const gltfLoader = new GLTFLoader();

@@ -33,6 +33,32 @@
             <button class="option-btn" data-option="C">Opsi C</button>
         </div>
     </div>
+
+    <div id="game-stats">
+        <p>Answered Question: 
+            <span id="answered-count">0</span>/<span id="total-gem">0</span>
+        </p>
+        <p>Correct Answer: 
+            <span id="correct-count">0</span>/<span>3</span>
+        </p>
+        <p>Incorrect Answer: 
+            <span id="wrong-count">0</span>/<span>3</span>
+        </p>
+    </div>
+
+    <div id="win-modal">
+        <div class="win-box">
+            <h2>You Survived...</h2>
+            <p>
+                The maze released you...  
+                <br>but something is still watching.
+            </p>
+
+            <button id="restart-btn">Restart</button>
+        </div>
+    </div>
+
+
     <audio id="backsound" src="/sounds/backsound.mp3" loop></audio>
     <script type="module" src="/src/main.js"></script>
 </body>
