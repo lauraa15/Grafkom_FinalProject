@@ -311,6 +311,7 @@ const winModal = document.getElementById("win-modal");
 const loseModal = document.getElementById("lose-modal");
 
 const restartBtn = document.getElementById("restart-btn");
+const restartBtn2 = document.getElementById("restart-btn2");
 
 function showWinModal(){
     winModal.style.display = "flex";
@@ -328,6 +329,9 @@ function showLoseModal(){
 }
 
 restartBtn.addEventListener("click", ()=>{
+    location.reload();
+});
+restartBtn2.addEventListener("click", ()=>{
     location.reload();
 });
 
