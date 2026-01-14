@@ -125,18 +125,18 @@ scene.add(flashlightTarget);
 flashlight.target = flashlightTarget;
 
 cam.add(flashlight);
-flashlight.position.set(0, 0, 0); // at camera position
-scene.add(cam); // add camera to scene so flashlight is rendered
+flashlight.position.set(0, 0, 0);
+scene.add(cam);
 
 let flashlightOn = true;
 
 // maze genrtae
 const maze = new Maze();
-const rows = 8; // lebar maze
-const cols = 8; // panjang maze
+const rows = 10; // lebar maze
+const cols = 10; // panjang maze
 
 const mazeLayout = generateMazeLayout(rows, cols);
-const quizLayout = generateQuizLayout(mazeLayout, 5, rows / 2);
+const quizLayout = generateQuizLayout(mazeLayout, 8, rows / 2);
 maze.generateMaze(quizLayout, { wallWidth: 2.5, wallHeight: 3, wallDepth: 2.5 }, bushMaterial, groundMaterial, gemMaterial);
 
 // spawn player
@@ -280,7 +280,7 @@ optionBtns.forEach((btn, index) => {
             setTimeout(() => {
                 if (isCorrect) {
                     points++;
-                    if (points >= 3) {
+                    if (points >= 5) {
                         showWinModal();
                     }
                 } else {
