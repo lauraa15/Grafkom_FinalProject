@@ -159,6 +159,59 @@ body {
 }
 
 
+#lose-modal{
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    backdrop-filter: blur(3px);
+}
+
+.lose-box{
+    background: #0c0c0c;
+    border: 2px solid #e62b2b;
+    padding: 30px 40px;
+    border-radius: 12px;
+    text-align: center;
+    color: #eaeaea;
+    width: 320px;
+    box-shadow: 0 0 20px #e62b2b;
+}
+
+.lose-box h2{
+    font-family: 'Jolly Lodger';
+    font-size: 36px;
+    letter-spacing: 2px;
+}
+
+.lose-box p{
+    margin: 15px 0 25px;
+    font-size: 25px;
+    opacity: 0.8;
+}
+
+.lose-box button{
+    font-family: 'Jolly Lodger';
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    background: #111;
+    border: 1px solid #e62b2b;
+    color: #e62b2b;
+    cursor: pointer;
+    transition: 0.3s;
+    font-size: 25px;
+}
+
+.lose-box button:hover{
+    background: #e62b2b;
+    color: black;
+}
+
+
 #menu-modal {
     position: absolute;
     top: 50%;

@@ -285,12 +285,9 @@ optionBtns.forEach((btn, index) => {
                     }
                 } else {
                     wrongAnswers++;
-                    if (wrongAnswers >= 3) {
-                        alert("Game Over! You have answered incorrectly 3 times.");
-
-                        location.reload(); // reset
-
-                        // mo masukin horror mask aja tp maaf gue gaberani natap muka gigi kuning itu
+                    if (wrongAnswers >= 1) {
+                        gameStarted = false;
+                        showLoseModal();
                     }
                 }
                 updateStats();
@@ -313,11 +310,24 @@ function updateStats(){
 
 // pop up menang
 const winModal = document.getElementById("win-modal");
+// pop up kalah
+const loseModal = document.getElementById("lose-modal");
+
 const restartBtn = document.getElementById("restart-btn");
 
 function showWinModal(){
     winModal.style.display = "flex";
-    controls.unlock();
+    controls.lock();
+    gameStarted = false;
+}
+function showLoseModal(){
+    // horrorMask.scale.set(25, 25, 25);    
+    // horrorMask.position.set(cam.position.x, cam.position.y-2, cam.position.z-1);
+    // console.log(horrorMask.position, cam.position);
+    // horrorMask.lookAt(cam.position);
+    loseModal.style.display = "flex";
+    controls.lock();
+    gameStarted = false;
 }
 
 restartBtn.addEventListener("click", ()=>{
@@ -353,7 +363,6 @@ function loadHorrorMask() {
         }
     );
 }
-
 
 document.addEventListener("keydown", (e) => {
     if (!gameStarted || menuActive) return;
