@@ -17,7 +17,7 @@ Entity 404 adalah game labirin 3D bertema horor yang dibuat menggunakan **Three.
 │           ENTITY 404                │
 │      Find your way out...           │
 │                                     │
-│          ▶ START GAME               │
+│          ▶ START GAME              │
 │                                     │
 │    WASD - Move | Mouse - Look       │
 │           E - Interact              │
@@ -150,7 +150,6 @@ npx vite build
 
 ### Audio
 - **Background Sound** - Musik ambient horor
-
 ---
 
 ## 🎲 Sistem Quiz
@@ -168,10 +167,10 @@ Setiap gem di labirin berisi satu pertanyaan. Jawab dengan benar untuk mendapatk
 ## 👥 Tim Pengembang
 
 | NIM | Nama |
-|-----|------|
-| 2372020 | - |
-| 2372060 | - |
-| 2372061 | - |
+|---------|--------|
+| 2372020 | Denzel |
+| 2372060 | Cecil  |
+| 2372061 | Laura  |
 
 **Mata Kuliah**: Grafika Komputer  
 **Final Project**
@@ -190,6 +189,8 @@ Project ini dibuat untuk keperluan akademis - Final Project Grafika Komputer.
 - [Vite](https://vitejs.dev/) untuk development experience yang cepat
 - [ambientCG](https://ambientcg.com/) untuk tekstur PBR gratis
 - [Sketchfab](https://sketchfab.com/) untuk model 3D
+- [Poly Pizza](https://poly.pizza/) untuk model 3D
+- [Aleksandar Zavisin](https://youtu.be/U2VquHtBaVw?si=Yx1d5VzoboBhG6NL) untuk backsound horror
 
 ---
 
