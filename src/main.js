@@ -282,7 +282,7 @@ optionBtns.forEach((btn, index) => {
                     }
                 } else {
                     wrongAnswers++;
-                    if (wrongAnswers >= 1) {
+                    if (wrongAnswers >= 3) {
                         gameStarted = false;
                         showLoseModal();
                     }
