@@ -148,6 +148,7 @@ export const questions = [
     }
 ];
 
+// (menggunakan AI)
 export function generateQuestions(quizElements) {
     const questionIndex = Array.from({length: questions.length}, (_, i) => i);
     for (let i = questionIndex.length - 1; i > 0; i--) {
@@ -158,3 +159,4 @@ export function generateQuestions(quizElements) {
         quiz.setQuestionId(questionIndex[index]);
     });
 }
+// (ai)

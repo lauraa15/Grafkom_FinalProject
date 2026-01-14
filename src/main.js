@@ -22,9 +22,6 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 document.body.appendChild(renderer.domElement);
 
-// Clock
-const clock = new THREE.Clock();
-
 // load texture
 // pake 1K texture supaya ga berat
 const bushTexture = loadTexture(
@@ -107,7 +104,7 @@ scene.add(ambientLight);
 // const pointLightHelper = new THREE.PointLightHelper(pointLight, 5);
 // scene.add(pointLightHelper)
 
-// flashlight
+// flashlight (ai)
 const flashlight = new THREE.SpotLight(0xffffff, 10);
 flashlight.angle = Math.PI / 6; // cone angle
 flashlight.penumbra = 0.3; // soft edges

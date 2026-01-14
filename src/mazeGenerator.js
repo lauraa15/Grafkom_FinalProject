@@ -13,6 +13,7 @@ function shuffle(arr) {
 function distance(a, b) {
     return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
 }
+//(ai)
 
 export function generateMazeLayout(rows, cols) {
     // 0 = path, 1 = wall
