@@ -277,7 +277,7 @@ optionBtns.forEach((btn, index) => {
             setTimeout(() => {
                 if (isCorrect) {
                     points++;
-                    if (points >= 5) {
+                    if (points >= 3) {
                         showWinModal();
                     }
                 } else {
